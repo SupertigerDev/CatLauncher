@@ -34,15 +34,12 @@ export class AimGuider {
 
     update(mouse) {
 
-        const yAngleToMouse = (mouse.y - this.y);
-        const xAngleToMouse = (mouse.x - this.x);
-        this.angle = Math.atan2(yAngleToMouse, xAngleToMouse) - 300;
-
+        const yAngleToMouse = this.y - mouse.y;
+        const xAngleToMouse = this.x - mouse.x;
+        this.angle = Math.atan2(yAngleToMouse, xAngleToMouse) + 300;
 
         // get distance and set power
-        const a = this.x - mouse.x;
-        const b = this.y - mouse.y;
-        const distance = Math.sqrt( a*a + b*b );
+        const distance = Math.sqrt( xAngleToMouse*xAngleToMouse + yAngleToMouse*yAngleToMouse );
         this.power = clamp(distance/3, 0, 100)
 
 
