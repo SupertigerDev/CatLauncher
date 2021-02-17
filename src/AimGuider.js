@@ -1,20 +1,21 @@
 import { ArcRender } from "./ArcRender.js";
 import { BasicRocket } from "./BasicRocket.js";
+import { GameEngine } from "./GameEngine.js";
 import { Player } from "./Player.js";
-import { Terrain } from "./Terrain.js";
 
 export class AimGuider {
     /**
-    @param {CanvasRenderingContext2D} context
+    @param {GameEngine} gameEngine
     @param {Player} player */
-    constructor(context, mouse, player) {
+    constructor(gameEngine, player) {
+        this.gameEngine = gameEngine;
         this.player = player;
-        this.context = context;
+        this.context = gameEngine.context;
 
         
         this.guiderBg = new Path2D();
         this.guiderPower = new Path2D();
-        this.mouse = mouse;
+        this.mouse = gameEngine.mouse;
         
         this.power = 0;
         this.angle = 0;
@@ -27,7 +28,7 @@ export class AimGuider {
         this.changePowerSpeed = 100;
         this.lastPowerChanged = Date.now();
         // this.arcRender = new ArcRender(this.x, this.y, context);
-        this.basicRocket = new BasicRocket(context, this, 0, 0, this.mouse);
+        this.basicRocket = new BasicRocket(gameEngine, this, 0, 0);
 
         this.xOffset = this.player.size / 2;
         this.yOffset = 0

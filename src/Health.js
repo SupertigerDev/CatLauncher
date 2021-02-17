@@ -1,10 +1,11 @@
+import { GameEngine } from "./GameEngine.js";
 import { Terrain } from "./Terrain.js";
 
 export class Health {
     /**
-    @param {CanvasRenderingContext2D} context */
-    constructor(context) {
-        this.context = context;
+    @param {GameEngine} gameEngine */
+    constructor(gameEngine) {
+        this.context = gameEngine.context;
         this.color = "#ff4545";
         this.foreColor = "#252525";
         this.health = 90;

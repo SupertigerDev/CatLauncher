@@ -1,15 +1,16 @@
 import { Terrain } from "./Terrain.js";
 import { Health } from "./Health.js";
 import { AimGuider } from "./AimGuider.js";
+import { GameEngine } from "./GameEngine.js";
 
 export class Player {
 	/**
 	@param {Terrain} terrain
-	@param {CanvasRenderingContext2D} context */
-	constructor(x, y, context, terrain, mouse) {
-		this.mouse = mouse;
-		this.terrain = terrain;
-		this.context = context;
+	@param {GameEngine} gameEngine */
+	constructor(x, y, gameEngine) {
+		this.gameEngine = gameEngine;
+		this.mouse = gameEngine.mouse;
+		this.context = gameEngine.context;
 		this.x = x;
 		this.y = y;
 		this.color = "green";
@@ -20,9 +21,9 @@ export class Player {
 
 		this.isOnGround = false;
 
-		this.health = new Health(this.context);
+		this.health = new Health(gameEngine);
 
-		this.aimGuider = new AimGuider(this.context, mouse, this);
+		this.aimGuider = new AimGuider(gameEngine, this);
 
 	}
 	draw() {
@@ -41,14 +42,15 @@ export class Player {
 	}
 
 	collision() {
+		const terrain = this.gameEngine.terrain;
 		this.isOnGround = false;
-		for (let y = 0; y < this.terrain.terrain.length; y++) {
-			for (let x = 0; x < this.terrain.terrain[y].length; x++) {
-				const block = this.terrain.terrain[y][x];
+		for (let y = 0; y < terrain.terrain.length; y++) {
+			for (let x = 0; x < terrain.terrain[y].length; x++) {
+				const block = terrain.terrain[y][x];
 				if (!block) continue;
 
-				const yColliding = this.y > block.y - this.size && this.y < block.y + this.terrain.blockSize;
-				const xColliding = this.x > block.x - this.size && this.x < block.x + this.terrain.blockSize;
+				const yColliding = this.y > block.y - this.size && this.y < block.y + terrain.blockSize;
+				const xColliding = this.x > block.x - this.size && this.x < block.x + terrain.blockSize;
 				if (yColliding && xColliding) {
 					this.y = block.y - this.size
 					this.isOnGround = true;

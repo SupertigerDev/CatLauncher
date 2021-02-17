@@ -1,13 +1,14 @@
 import { AimGuider } from "./AimGuider.js";
+import { GameEngine } from "./GameEngine.js";
 
 export class BasicRocket {
     /**
-    @param {CanvasRenderingContext2D} context
+    @param {GameEngine} gameEngine
     @param {AimGuider} aimGuider */
-    constructor(context, aimGuider, angle, velocity, mouse) {
-        this.context = context;
+    constructor(gameEngine, aimGuider, angle, velocity) {
+        this.context = gameEngine.context;
         this.aimGuider = aimGuider
-        this.mouse = mouse;
+        this.mouse = gameEngine.mouse;
         this.gravity = -9.8; 
         this.launch = false;  
         this.xOffset = 0;
