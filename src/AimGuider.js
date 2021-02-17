@@ -9,11 +9,13 @@ export class AimGuider {
         this.guiderBg = new Path2D();
         this.guiderPower = new Path2D();
 
-        this.power = 50;
+        this.power = 0;
         this.angle = 0;
 
         this.x = 0;
         this.y = 0
+
+        this.show = false;
 
     }
     draw(x, y) {
@@ -21,11 +23,12 @@ export class AimGuider {
         this.y = y;
         this.context.setTransform(1, 0, 0, 1, x, y);
         this.context.rotate(this.angle);
+        if (!this.show) return;
 
         
-        this.context.fillStyle = "#ffffff82";
-        this.guiderBg = this.createGuider(new Path2D(), 100)
-        this.context.fill(this.guiderBg);
+        // this.context.fillStyle = "#ffffff82";
+        // this.guiderBg = this.createGuider(new Path2D(), 100)
+        // this.context.fill(this.guiderBg);
 
         this.context.fillStyle = "#ffffff9c";
         this.guiderPower = this.createGuider(new Path2D(), this.power);
@@ -33,14 +36,18 @@ export class AimGuider {
     }
 
     update(mouse) {
-
+        if (mouse.mouseBtn1) this.show = true;
+        if (!mouse.mouseBtn1) return;
         const yAngleToMouse = this.y - mouse.y;
         const xAngleToMouse = this.x - mouse.x;
         this.angle = Math.atan2(yAngleToMouse, xAngleToMouse) + 300;
-
+        
         // get distance and set power
         const distance = Math.sqrt( xAngleToMouse*xAngleToMouse + yAngleToMouse*yAngleToMouse );
         this.power = clamp(distance/3, 0, 100)
+
+        if (this.power <= 3) this.show = false; 
+
 
 
     }

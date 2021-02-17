@@ -17,12 +17,12 @@ export class Terrain {
         for (let y = height; y >= 0; y-= this.blockSize) {
             this.terrain[_y] = [];
             _x = 0;
-            if (y <= this.groundHeight){
-                for (let x = 0; x < width; x += this.blockSize) {
-                    this.terrain[_y][_x] = 1;
-                    _x++
-                }
-            }
+            for (let x = 0; x < width; x += this.blockSize) {
+                const pos = {x: _x * this.blockSize, y: _y * this.blockSize}
+                this.terrain[_y][_x] = y <= this.groundHeight ? pos : 0;
+      
+                _x++
+            } 
                 _y++;
         }
 
@@ -36,7 +36,10 @@ export class Terrain {
         context.fillStyle = this.color;
         for (let y = 0; y < this.terrain.length; y++) {
             for (let x = 0; x < this.terrain[y].length; x++) {
-                context.fillRect(x * this.blockSize, y*this.blockSize, this.blockSize - 0.5, this.blockSize - 0.5)
+                const block = this.terrain[y][x];
+                if (block) {
+                    context.fillRect(x * this.blockSize, y*this.blockSize, this.blockSize - 0.5, this.blockSize - 0.5)
+                }
             }
             
         }
