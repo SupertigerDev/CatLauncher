@@ -22,23 +22,26 @@ export class Player {
 
 		this.health = new Health(this.context);
 
-		this.aimGuider = new AimGuider(this.context);
+		this.aimGuider = new AimGuider(this.context, mouse, this);
 
 	}
 	draw() {
 		this.context.fillStyle = this.color;
 		this.context.fillRect(this.x, this.y, this.size, this.size)
 		this.health.draw((this.x + (this.size / 2)) - (this.health.width / 2), this.y - this.size);
-		this.aimGuider.draw(this.x + (this.size / 2), this.y);
+		this.aimGuider.draw();
 		this.context.setTransform(1, 0, 0, 1, 0, 0);
 	}
 
 	update() {
+		this.aimGuider.update();
+		this.collision();
+		this.fallGravity();
+		this.movement();
+	}
+
+	collision() {
 		this.isOnGround = false;
-		this.aimGuider.update(this.mouse);
-
-
-		// collision detection
 		for (let y = 0; y < this.terrain.terrain.length; y++) {
 			for (let x = 0; x < this.terrain.terrain[y].length; x++) {
 				const block = this.terrain.terrain[y][x];
@@ -52,12 +55,21 @@ export class Player {
 				}
 			}
 		}
-
+	}
+	fallGravity() {
 		if (!this.isOnGround) {
 			this.gravity += 0.1;
 			this.y += this.gravity;
 		} else {
 			this.gravity = 0;
+		}
+	}
+	movement() {
+		if (this.mouse.keyPressed.a) {
+			this.x -=1;
+		}
+		if (this.mouse.keyPressed.d) {
+			this.x +=1;
 		}
 	}
 }

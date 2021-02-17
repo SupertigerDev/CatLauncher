@@ -11,7 +11,7 @@ document.body.append(canvas);
 // context.fillRect(canvas.width - 10,canvas.height - 10,10,10)
 // console.log(context.getImageData(0, 0,10, 1 ))
 
-const mouse = {x: 0, y: 0, mouseBtn1: false}
+const mouse = {x: 0, y: 0, mouseBtn1: false, keyPressed: {}}
 
 document.addEventListener("mousemove", (event) => {
     mouse.x = event.pageX;
@@ -23,19 +23,25 @@ document.addEventListener("mousedown", (event) => {
 document.addEventListener("mouseup", (event) => {
     mouse.mouseBtn1 = false;
 });
+document.addEventListener("keyup", event => {
+    mouse.keyPressed[event.key] = 0;
+})
+document.addEventListener("keydown", event => {
+    mouse.keyPressed[event.key] = 1;
+})
 
 function GameEngine() {
     self = this;
     
-    const terrain = new Terrain(canvas.width, canvas.height);
-    const player = new Player(500, 300, context, terrain, mouse);
+    this.terrain = new Terrain(canvas.width, canvas.height);
+    this.player = new Player(0, 300, context, this.terrain, mouse);
 
     this.update = function () {
-        player.update();
+        this.player.update();
     }
     this.draw = function () {
-        terrain.draw(context);
-        player.draw();
+        this.terrain.draw(context);
+        this.player.draw();
     }
     this.frame = function() {
         context.clearRect(0,0, canvas.width, canvas.height)
@@ -48,5 +54,6 @@ function GameEngine() {
 
 
 }
+let gameEngine;
 
-const gameEngine = new GameEngine();
+window.gameEngine = gameEngine = new GameEngine();
