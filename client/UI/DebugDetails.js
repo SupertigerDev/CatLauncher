@@ -33,8 +33,9 @@ export class DebugDetails {
         this.debugInfo.push(["FPS", round(this.gameEngine.fps, 0)])
         playerName && this.debugInfo.push(["PLAYER_NAME", playerName])
         socketId && this.debugInfo.push(["SOCKET_ID", this.gameEngine.networkManager.io.id])
-        if (socketId) {
+        if (socketId && this.gameEngine.networkManager.authenticated) {
             const selfPlayer = this.gameEngine.players[socketId];
+            this.debugInfo.push(["HEALTH", round(selfPlayer.health.health, 0)])
             this.debugInfo.push(["X", round(selfPlayer.x, 0)])
             this.debugInfo.push(["Y", round(selfPlayer.y, 0)])
             this.debugInfo.push(["ANGLE", round((selfPlayer.aimGuider.angle)* (180/Math.PI), 1)])

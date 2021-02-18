@@ -7,10 +7,13 @@ export class BasicRocket {
     @param {AimGuider} aimGuider */
     constructor(gameEngine, aimGuider, angle, velocity) {
         this.context = gameEngine.context;
-        this.aimGuider = aimGuider
+        this.aimGuider = aimGuider;
+        this.player = aimGuider.player;
         this.mouse = gameEngine.mouse;
         this.gravity = -9.8; 
         this.launch = false;  
+        this.xStartLaunch = this.aimGuider.x;
+        this.yStartLaunch = this.aimGuider.y;
         this.xOffset = 0;
         this.yOffset = 0;
 
@@ -37,14 +40,14 @@ export class BasicRocket {
         return this.aimGuider.power / 2.8
     }
     get x () {
-        return this.aimGuider.x + this.xOffset;
+        return this.xStartLaunch - this.xOffset;
     }
     get y () {
-        return this.aimGuider.y + this.yOffset;
+        return this.yStartLaunch - this.yOffset;
     }
     draw() {
-        const x = this.aimGuider.x - this.xOffset * 29;
-        const y = this.aimGuider.y - this.yOffset * 29;
+        const x = this.x - this.xOffset * 29;
+        const y = this.y - this.yOffset * 29;
         this.context.beginPath();
         this.context.fillStyle = "red"
         this.context.arc(x,y,10, 0, 2 * Math.PI);
@@ -74,11 +77,13 @@ export class BasicRocket {
         }
 
         // launch
-        if (this.mouse.keyPressed[" "]) {
+        if (this.player.isSelf && this.mouse.keyPressed[" "]) {
             this.launchRocket();
         }
     }
     launchRocket() {
+        this.xStartLaunch = this.aimGuider.x;
+        this.yStartLaunch = this.aimGuider.y;
         this.launch = true;
         this.xOffset = 0;
         this.yOffset = 0;
@@ -92,8 +97,8 @@ export class BasicRocket {
         const now = Date.now();
         if (now -this.recordStartTime > this.recordLength) return;
         if (now - this.lastPathStamp < this.recordInterval) return;
-        const x = this.aimGuider.x - this.xOffset * 29;
-        const y = this.aimGuider.y - this.yOffset * 29;
+        const x = this.x - this.xOffset * 29;
+        const y = this.y - this.yOffset * 29;
         this.lastPathStamp = now;
         this.lastShotPathArray.push({x, y})
     }
