@@ -8,7 +8,7 @@ export class Health {
         this.context = gameEngine.context;
         this.color = "#ff4545";
         this.foreColor = "#252525";
-        this.health = 90;
+        this.health = 100;
 
         this.height = 20;
         this.width = 150;
@@ -27,7 +27,8 @@ export class Health {
         this.context.font = "14px Arial";
         this.context.fillStyle = "black";
         this.context.textAlign = "center";
-        this.context.fillText(this.health + "/100", x +this.width / 2, y + this.height - 4);
+        this.context.textBaseline = "middle";
+        this.context.fillText(this.health + "/100", x +this.width / 2, y + this.height / 2);
     }
 
     update() {

@@ -99,8 +99,8 @@ export class AimGuider {
             const now = Date.now();
             if ((now - this.lastAngleChanged ) < this.changeAngleSpeed) return;
             this.lastAngleChanged = now;
-            leftArrow && (this.angle -=0.02);
-            rightArrow && (this.angle +=0.02);
+            leftArrow && (this.angle -=0.01);
+            rightArrow && (this.angle +=0.01);
         }
         if (upArrow || downArrow) {
             this.show = true;

@@ -2,17 +2,23 @@ import { Terrain } from "./Terrain.js";
 import { Health } from "./Health.js";
 import { AimGuider } from "./AimGuider.js";
 import { GameEngine } from "./GameEngine.js";
+import { emitConstants } from "./NetworkManager.js";
 
 export class Player {
 	/**
 	@param {Terrain} terrain
 	@param {GameEngine} gameEngine */
-	constructor(x, y, gameEngine) {
+	constructor(x, y, gameEngine, name, id) {
+		this.name = name;
+		this.id = id;
 		this.gameEngine = gameEngine;
+		this.io = this.gameEngine.networkManager.io;
 		this.mouse = gameEngine.mouse;
 		this.context = gameEngine.context;
 		this.x = x;
 		this.y = y;
+		this.lastX = 0;
+		this.lastY = 0;
 		this.color = "green";
 		this.size = 30;
 
@@ -22,9 +28,8 @@ export class Player {
 		this.isOnGround = false;
 
 		this.health = new Health(gameEngine);
-
 		this.aimGuider = new AimGuider(gameEngine, this);
-
+		this.isSelf = this.id === this.gameEngine.networkManager.io.id;
 	}
 	draw() {
 		this.context.fillStyle = this.color;
@@ -39,6 +44,14 @@ export class Player {
 		this.collision();
 		this.fallGravity();
 		this.movement();
+		this.emitEvent();
+	}
+	emitEvent() {
+		if (this.lastX !== Math.round(this.x) || this.lastY !== Math.round(this.y)) {
+			this.lastX = Math.round(this.x);
+			this.lastY = Math.round(this.y);
+			this.io.emit(emitConstants.PLAYER_MOVE, {x: this.lastX, y: this.lastY});
+		} 
 	}
 
 	collision() {
