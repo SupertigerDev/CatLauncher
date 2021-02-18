@@ -27,14 +27,14 @@ export class Player {
 
 		this.isOnGround = false;
 
-		this.health = new Health(gameEngine);
+		this.health = new Health(gameEngine, this);
 		this.aimGuider = new AimGuider(gameEngine, this);
 		this.isSelf = this.id === this.gameEngine.networkManager.io.id;
 	}
 	draw() {
 		this.context.fillStyle = this.color;
 		this.context.fillRect(this.x, this.y, this.size, this.size)
-		this.health.draw((this.x + (this.size / 2)) - (this.health.width / 2), this.y - this.size);
+		this.health.draw();
 		this.aimGuider.draw();
 		this.context.setTransform(1, 0, 0, 1, 0, 0);
 	}
@@ -47,6 +47,7 @@ export class Player {
 		this.emitEvent();
 	}
 	emitEvent() {
+		if (!this.isSelf) return;
 		if (this.lastX !== Math.round(this.x) || this.lastY !== Math.round(this.y)) {
 			this.lastX = Math.round(this.x);
 			this.lastY = Math.round(this.y);
@@ -72,6 +73,7 @@ export class Player {
 		}
 	}
 	fallGravity() {
+		if (!this.isSelf) return;
 		if (!this.isOnGround) {
 			this.gravity += 0.1;
 			this.y += this.gravity;
@@ -80,6 +82,7 @@ export class Player {
 		}
 	}
 	movement() {
+		if (!this.isSelf) return;
 		if (this.mouse.keyPressed.a) {
 			this.x -=1;
 		}

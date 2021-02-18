@@ -1,10 +1,13 @@
 import { GameEngine } from "./GameEngine.js";
+import { Player } from "./Player.js";
 import { Terrain } from "./Terrain.js";
 
 export class Health {
     /**
-    @param {GameEngine} gameEngine */
-    constructor(gameEngine) {
+    @param {GameEngine} gameEngine
+    @param {Player} player */
+    constructor(gameEngine, player) {
+        this.player = player;
         this.context = gameEngine.context;
         this.color = "#ff4545";
         this.foreColor = "#252525";
@@ -16,8 +19,9 @@ export class Health {
     }
     /**
     @param {CanvasRenderingContext2D} context */
-    draw(x, y) {
-        y -= 30;
+    draw() {
+        const x = (this.player.x + (this.player.size / 2)) - (this.width / 2)
+        const y = this.player.y - this.player.size - 30;
         this.context.fillStyle = this.foreColor;
         this.context.fillRect(x, y, this.width, this.height)
         this.context.fillStyle = this.color;
@@ -29,6 +33,8 @@ export class Health {
         this.context.textAlign = "center";
         this.context.textBaseline = "middle";
         this.context.fillText(this.health + "/100", x +this.width / 2, y + this.height / 2);
+        this.context.fillStyle = this.player.isSelf ? "white" : "red";
+        this.context.fillText(this.player.name, x +this.width / 2, y - this.height);
     }
 
     update() {

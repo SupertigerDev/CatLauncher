@@ -13,20 +13,36 @@ export class NetworkManager {
     }
     registerEvents() {
         this.io.on("connect", () => {
-            this.io.emit(emitConstants.AUTHENTICATE, {name})
-        })
-        this.io.on(eventConstants.AUTHENTICATED, () => {
             let name = prompt("Name", this.playerName || "");
             if (!name) name = "Unnamed Cat"
             this.playerName = localStorage["playerName"] = name;
-            this.spawnPlayer(name, this.io.id);
+            this.io.emit(emitConstants.AUTHENTICATE, {name})
+        })
+        this.io.on(eventConstants.AUTHENTICATED, ({connectedPlayers}) => {
+            this.spawnPlayer(this.playerName, this.io.id);
+            for (let id in connectedPlayers) {
+                const {name, position: {x, y}} = connectedPlayers[id];
+                this.gameEngine.players[id] = new Player(x, y, this.gameEngine, name, id);
+            }
+
+            this.authenticated = true;
+        })
+        this.io.on(eventConstants.PLAYER_CONNECTED, ({id, name}) => {
+            this.gameEngine.players[id] = new Player(0, 0, this.gameEngine, name, id);
+        })
+        this.io.on(eventConstants.PLAYER_MOVED, ({id, x, y}) => {
+            const player = this.gameEngine.players[id];
+            player.x = x;
+            player.y = y;
+        })
+        this.io.on(eventConstants.PLAYER_DISCONNECTED, ({id}) => {
+            delete this.gameEngine.players[id];
         })
     }
     spawnPlayer(name, id) {
         const player = new Player(0, 300, this.gameEngine, name, id)
         player.x = this.gameEngine.canvas.width / 2  - (player.size / 2)
         this.gameEngine.players[id] = player;
-        this.authenticated = true;
     }
 }
 
@@ -36,5 +52,9 @@ export const emitConstants = {
 }
 export const eventConstants = {
     "AUTHENTICATED": 0x0,
+    "PLAYER_MOVED": 0x1,
+    "PLAYER_CONNECTED": 0x2,
+    "PLAYER_DISCONNECTED": 0x3,
+
 
 }
