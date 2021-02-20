@@ -35,10 +35,12 @@ const emitConstants = {
     "PLAYER_MOVED": 0x1,
     "PLAYER_CONNECTED": 0x2,
     "PLAYER_DISCONNECTED": 0x3,
+    "LAUNCH_ROCKET": 0x4
 };
 const eventConstants = {
     "AUTHENTICATE": 0x0,
     "PLAYER_MOVE": 0x1,
+    "LAUNCH_ROCKET_REQUEST": 0x2,
 };
 const clients = {};
 io.on('connection', ((socket) => {
@@ -55,6 +57,9 @@ io.on('connection', ((socket) => {
     socket.on(eventConstants.PLAYER_MOVE, (pos) => {
         clients[socket.id].position = pos;
         socket.broadcast.emit(emitConstants.PLAYER_MOVED, Object.assign({ id: socket.id }, pos));
+    });
+    socket.on(eventConstants.LAUNCH_ROCKET_REQUEST, (data) => {
+        io.emit(emitConstants.LAUNCH_ROCKET, { id: socket.id, angle: data.angle, power: data.power });
     });
     socket.on("disconnect", () => {
         delete clients[socket.id];

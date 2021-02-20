@@ -3,6 +3,7 @@ import { Health } from "./Health.js";
 import { AimGuider } from "./AimGuider.js";
 import { GameEngine } from "./GameEngine.js";
 import { emitConstants } from "./NetworkManager.js";
+import { BasicRocket } from "./BasicRocket.js";
 
 export class Player {
 	/**
@@ -29,9 +30,11 @@ export class Player {
 
 		this.health = new Health(gameEngine, this);
 		this.aimGuider = new AimGuider(gameEngine, this);
+		this.basicRocket = new BasicRocket(gameEngine, this, 0, 0);
 		this.isSelf = this.id === this.gameEngine.networkManager.io.id;
 	}
 	draw() {
+		this.basicRocket.draw()
 		this.context.fillStyle = this.color;
 		this.context.fillRect(this.x, this.y, this.size, this.size)
 		this.health.draw();
@@ -39,12 +42,18 @@ export class Player {
 		this.context.setTransform(1, 0, 0, 1, 0, 0);
 	}
 
-	update() {
+	update(delta) {
 		this.aimGuider.update();
+		this.basicRocket.update()
 		this.collision();
 		this.fallGravity();
-		this.movement();
+		this.movement(delta);
 		this.emitEvent();
+
+		// launch rocket
+        if (this.isSelf && !this.basicRocket.launch && this.mouse.keyPressed[" "]) {
+            this.gameEngine.networkManager.launchRocketRequest(this.aimGuider.power, this.aimGuider.angle);
+        }
 	}
 	emitEvent() {
 		if (!this.isSelf) return;
@@ -53,6 +62,10 @@ export class Player {
 			this.lastY = Math.round(this.y);
 			this.io.emit(emitConstants.PLAYER_MOVE, {x: this.lastX, y: this.lastY});
 		} 
+	}
+
+	launchRocket(power, angle) {
+		this.basicRocket.launchRocket(angle, power);
 	}
 
 	collision() {
@@ -81,13 +94,13 @@ export class Player {
 			this.gravity = 0;
 		}
 	}
-	movement() {
+	movement(delta) {
 		if (!this.isSelf) return;
 		if (this.mouse.keyPressed.a) {
-			this.x -=1;
+			this.x -=150 * delta;
 		}
 		if (this.mouse.keyPressed.d) {
-			this.x +=1;
+			this.x +=150 * delta;
 		}
 	}
 }

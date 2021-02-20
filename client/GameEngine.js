@@ -35,14 +35,18 @@ export function GameEngine(context, canvas) {
 
 
     this.terrain = new Terrain(canvas.width, canvas.height);
+    /**
+     * @type {Array.<Player>}
+     * @const
+     */
     this.players = {};
     // UI
     this.connectionStatus = new ConnectionStatus(this);
     this.debugDetails = new DebugDetails(this);
 
-    this.update = function () {
+    this.update = function (delta) {
         for (let key in this.players) {
-            this.players[key].update();            
+            this.players[key].update(delta);            
         }
         this.connectionStatus.update();
         this.debugDetails.update();
@@ -57,22 +61,22 @@ export function GameEngine(context, canvas) {
         this.connectionStatus.draw();
         this.debugDetails.draw();
     }
-    this.frame = function() {
+    this.frame = function(time) {
+        // fps counter
+        if(!self.lastCalledTime) {
+            self.lastCalledTime = time
+            self.fps = 0;
+        }
+        const delta = (time - self.lastCalledTime)/1000;
+        self.lastCalledTime = time
+        self.fps = 1/delta;
         context.clearRect(0,0, canvas.width, canvas.height)
         context.setTransform(1, 0, 0, 1, 0, 0); // reset transform
-        self.update();
+        self.update(delta);
         self.draw(); 
         
         requestAnimationFrame(self.frame)
-        // fps counter
-        if(!self.lastCalledTime) {
-            self.lastCalledTime = Date.now();
-            self.fps = 0;
-            return;
-         }
-         const delta = (Date.now() - self.lastCalledTime)/1000;
-         self.lastCalledTime = Date.now();
-         self.fps = 1/delta;
+
     }
     this.frame();
 

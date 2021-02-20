@@ -38,23 +38,31 @@ export class NetworkManager {
         this.io.on(eventConstants.PLAYER_DISCONNECTED, ({id}) => {
             delete this.gameEngine.players[id];
         })
+        this.io.on(eventConstants.LAUNCH_ROCKET, ({id, power, angle}) => {
+            this.gameEngine.players?.[id].launchRocket(power, angle);
+        })
     }
     spawnPlayer(name, id) {
         const player = new Player(0, 300, this.gameEngine, name, id)
         player.x = this.gameEngine.canvas.width / 2  - (player.size / 2)
         this.gameEngine.players[id] = player;
     }
+    launchRocketRequest(power, angle) {
+        this.io.emit(emitConstants.LAUNCH_ROCKET_REQUEST, {power, angle})
+    }
 }
 
 export const emitConstants = {
     "AUTHENTICATE": 0x0,
     "PLAYER_MOVE": 0x1,
+    "LAUNCH_ROCKET_REQUEST": 0x2,
 }
 export const eventConstants = {
     "AUTHENTICATED": 0x0,
     "PLAYER_MOVED": 0x1,
     "PLAYER_CONNECTED": 0x2,
     "PLAYER_DISCONNECTED": 0x3,
+    "LAUNCH_ROCKET": 0x4
 
 
 }

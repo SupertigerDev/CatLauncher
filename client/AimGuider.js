@@ -28,7 +28,6 @@ export class AimGuider {
         this.changePowerSpeed = 100;
         this.lastPowerChanged = Date.now();
         // this.arcRender = new ArcRender(this.x, this.y, context);
-        this.basicRocket = new BasicRocket(gameEngine, this, 0, 0);
 
         this.xOffset = this.player.size / 2;
         this.yOffset = 0
@@ -42,6 +41,7 @@ export class AimGuider {
     }
 
     draw() {
+        if (!this.player.isSelf) return; 
         this.context.setTransform(1, 0, 0, 1, this.x, this.y);
         this.context.rotate(this.angle - 1.5708 );
         if (!this.show) return;
@@ -60,13 +60,10 @@ export class AimGuider {
         // this.arcRender.x = this.x;
         // this.arcRender.y = this.y;
         // this.arcRender.draw(this.angle, this.power);
-
-        this.basicRocket.draw()
         
     }
 
     update() {
-        this.basicRocket.update();
         // change angle using arrow keys
         this.changeAngle();
         if (this.mouse.mouseBtn1) this.show = true;

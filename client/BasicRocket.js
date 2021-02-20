@@ -1,14 +1,16 @@
-import { AimGuider } from "./AimGuider.js";
 import { GameEngine } from "./GameEngine.js";
+import { Player } from "./Player.js";
 
 export class BasicRocket {
     /**
     @param {GameEngine} gameEngine
-    @param {AimGuider} aimGuider */
-    constructor(gameEngine, aimGuider, angle, velocity) {
+    @param {Player} player */
+    constructor(gameEngine, player) {
+        this.power = 0;
+        this.angle = 0;
         this.context = gameEngine.context;
-        this.aimGuider = aimGuider;
-        this.player = aimGuider.player;
+        this.player = player;
+        this.aimGuider = player.aimGuider;
         this.mouse = gameEngine.mouse;
         this.gravity = -9.8; 
         this.launch = false;  
@@ -28,16 +30,11 @@ export class BasicRocket {
         this.recordInterval = 50 // 500 ms
         this.lastPathStamp = 0;
 
-        setInterval(() => {
-            this.launchRocket()
-        }, 5000);
 
     }
-    get angle () {
-        return this.aimGuider.angle
-    }
+
     get velocity () {
-        return this.aimGuider.power / 2.8
+        return this.power / 2.8
     }
     get x () {
         return this.xStartLaunch - this.xOffset;
@@ -75,13 +72,10 @@ export class BasicRocket {
             this.v_x = v_xNew;
             this.recordPath();
         }
-
-        // launch
-        if (this.player.isSelf && this.mouse.keyPressed[" "]) {
-            this.launchRocket();
-        }
     }
-    launchRocket() {
+    launchRocket(angle, power) {
+        this.power = power;
+        this.angle = angle;
         this.xStartLaunch = this.aimGuider.x;
         this.yStartLaunch = this.aimGuider.y;
         this.launch = true;
@@ -95,7 +89,9 @@ export class BasicRocket {
     }
     recordPath() {
         const now = Date.now();
-        if (now -this.recordStartTime > this.recordLength) return;
+        if (now -this.recordStartTime > this.recordLength) {
+            this.launch = false;
+        };
         if (now - this.lastPathStamp < this.recordInterval) return;
         const x = this.x - this.xOffset * 29;
         const y = this.y - this.yOffset * 29;
