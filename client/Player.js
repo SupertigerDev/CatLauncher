@@ -44,9 +44,9 @@ export class Player {
 
 	update(delta) {
 		this.aimGuider.update();
-		this.basicRocket.update()
+		this.basicRocket.update(delta)
 		this.collision();
-		this.fallGravity();
+		this.fallGravity(delta);
 		this.movement(delta);
 		this.emitEvent();
 
@@ -85,11 +85,11 @@ export class Player {
 			}
 		}
 	}
-	fallGravity() {
+	fallGravity(delta) {
 		if (!this.isSelf) return;
 		if (!this.isOnGround) {
-			this.gravity += 0.1;
-			this.y += this.gravity;
+			this.gravity += 20* delta;
+			this.y += this.gravity 
 		} else {
 			this.gravity = 0;
 		}

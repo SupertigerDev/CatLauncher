@@ -6,6 +6,7 @@ export class BasicRocket {
     @param {GameEngine} gameEngine
     @param {Player} player */
     constructor(gameEngine, player) {
+        this.gameEngine = gameEngine;
         this.power = 0;
         this.angle = 0;
         this.context = gameEngine.context;
@@ -29,6 +30,7 @@ export class BasicRocket {
         this.recordLength = 5 * 1000 // 5 seconds
         this.recordInterval = 50 // 500 ms
         this.lastPathStamp = 0;
+        this.isOnGround = false;
 
 
     }
@@ -54,10 +56,13 @@ export class BasicRocket {
         }
 
     }
-    update() {
+    update(delta) {
 
         if (this.launch) {
-            const dt = 0.01;
+            this.recordPath();
+            if (this.isOnGround) return;
+            const speed = 3;
+            const dt = delta * speed;
             const v_yNew = this.v_y + (this.gravity * dt)
             const v_xNew = this.v_x ;
 
@@ -70,10 +75,33 @@ export class BasicRocket {
 
             this.v_y = v_yNew;
             this.v_x = v_xNew;
-            this.recordPath();
+            this.collision();
         }
     }
+
+
+	collision() {
+		const terrain = this.gameEngine.terrain;
+        const _x = this.x - this.xOffset * 29;
+        const _y = this.y - this.yOffset * 29;
+		this.isOnGround = false;
+		for (let y = 0; y < terrain.terrain.length; y++) {
+			for (let x = 0; x < terrain.terrain[y].length; x++) {
+				const block = terrain.terrain[y][x];
+				if (!block) continue;
+
+				const yColliding = _y > block.y - 10 && _y < block.y + terrain.blockSize;
+				const xColliding = _x > block.x - 10 && _x < block.x + terrain.blockSize;
+				if (yColliding && xColliding) {
+					this.isOnGround = true;
+				}
+			}
+		}
+	}
+
+
     launchRocket(angle, power) {
+        this.isOnGround = false;
         this.power = power;
         this.angle = angle;
         this.xStartLaunch = this.aimGuider.x;
